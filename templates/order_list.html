@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="mt-5 pt-4">
+  <div class="container dark-grey-text mt-5">
+    <h1 class="font-weight-bold text-warning" style="text-shadow: 2px 2px 2px black;">Lista de Pedidos</h1>
+    <ul class="list-group mt-4">
+      {% for order in orders %}
+      <li class="list-group-item">
+        <span>{{ order.ref_code }}</span>
+        <ul class="list-group mt-2 bg-dark">
+          <li class="list-group-item list-group-item-dark">Usuario: {{ order.user }}</li>
+          <li class="list-group-item list-group-item-dark">Productos: {{ order.items.item }}</li>
+          <li class="list-group-item list-group-item-dark">Fecha: {{ order.start_date }}</li>
+          <li class="list-group-item list-group-item-dark">Dirección: {{ order.shipping_address }}</li>
+        </ul>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <main>
+        <div>
+            <button type="button" class="btn btn-warning" style="margin-left:50em;"><a href="/opinions/create">Añadir
+                    opinión</a></button>
+
+            <table class="table" style="margin:4em;">
+                <thead>
+                    <tr>
+                        <th scope="col">Titulo</th>
+                        <th scope="col">Descripción</th>
+                        <th scope="col">Autor</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for opinion in opinions %}
+                    <tr>
+                        <td><a href="/opinions/{{ opinion.id }}">{{ opinion.title }}</a></td>
+                        <td>{{ opinion.description }}</td>
+                        <td>{{ opinion.user.username }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>
+{% endblock content %}

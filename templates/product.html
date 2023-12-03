@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main class="mt-5 pt-4">
+  <div class="container dark-grey-text mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 class="font-weight-bold text-warning" style="text-shadow: 2px 2px 2px black;">{{ item.title|title }}</h1>
+      </div>
+      <div class="col-md-2"></div>
+      <div class="col-md-4">
+        <span class="badge badge-pill badge-warning d-flex align-items-center justify-content-center" style="color: #000 !important; font-size: 2rem;">
+          {{ item.get_fabricante_display }}
+        </span>
+      </div>
+    </div>
+    <!--Grid row-->
+    <div class="row wow fadeIn">
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+        <img src="{{ item.image.url }}" class="img-fluid" alt="">
+      </div>
+      <!--Grid column-->
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+        <!--Content-->
+        <div class="p-4">
+          <div class="mb-3">
+            <a href="">
+              <span class="badge purple mr-2" style="font-size: x-large;">{{ object.get_category_display }}</span>
+            </a>
+            <br>
+            <br>
+            {% if object.get_disponibility_display == "Disponible" %}
+            <a href="">
+              <span class="badge green mr-1" style="font-size: x-large;">{{ object.get_disponibility_display }}</span>
+            </a>
+            {% else %}
+            <a href="">
+              <span class="badge red mr-1" style="font-size: x-large;">{{ object.get_disponibility_display }}</span>
+            </a>
+            {% endif %}
+          </div>
+          <p class="lead">
+            {% if object.discount_price %}
+            <span class="mr-1">
+              <del>€{{ object.price }}</del>
+            </span>
+            <span>€{{ object.discount_price }}</span>
+            {% else %}
+            <span class="badge badge-light text-light h4 mr-2" style="font-size: 50px; padding: 10px;">
+              €{{ object.price }}
+            </span>
+            {% endif %}
+          </p>
+          <p class="lead font-weight-normal white-text mb-4" style="font-size: 18px;">
+            {{ object.description }}
+          </p>
+          {% if object.get_disponibility_display == "Disponible" %}
+          <a href="{{ object.get_add_to_cart_url }}" class="btn btn-primary btn-md my-0 p">
+            Añadir al carrito
+            <i class="fas fa-shopping-cart ml-1"></i>
+          </a>
+          <a href="{{ object.get_remove_from_cart_url }}" class="btn btn-danger btn-md my-0 p">
+            Eliminar del carrito
+          </a>
+          {% if request.user.is_staff %}
+          <a href="{{ object.get_admin_item_panel }}" class="btn btn-success btn-md ">
+            Editar
+          </a>
+          {% endif %}
+
+          {% endif %}
+        </div>
+        <!--Content-->
+      </div>
+      <!--Grid column-->
+    </div>
+    <!--Grid row-->
+    <hr>
+  </div>
+</main>
+
+{% endblock content %}

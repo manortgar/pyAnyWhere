@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<main>
+    <div class="container wow fadeIn">
+        <h2 class="my-5 h2 text-center">Factura del pedido</h2>
+
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <h3>Información del cliente</h3>
+                <p>Email: {{ order.user.email }}</p>
+                <p>DNI: {{ order.user.DNI }}</p>
+                <p>Teléfono: {{ order.user.telefono }}</p>
+
+                <h3>Información de envío</h3>
+                {% if order.shipping_option == 'D' %}
+                <p>Dirección de envío: {{ order.user.shipping_address.street_address }}</p>
+                <p>País: {{ order.user.shipping_address.country }}</p>
+                <p>Código postal: {{ order.user.shipping_address.zip }}</p>
+                {% else %}
+                <p>Opción de envío: {{ order.user.shipping_option }}</p>
+                {% endif %}
+
+                <h3>Información de pago</h3>
+                {% if order.payment_option == 'T' %}
+                <p>Número de tarjeta: {{ order.user.card_number }}</p>
+                <p>Fecha de caducidad: {{ order.user.card_expiry_month }}/{{ order.user.card_expiry_year }}</p>
+                <p>CVC: {{ order.user.card_cvc }}</p>
+                {% else %}
+                <p>Opción de pago: {{ order.user.payment_option }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr class="mb-4">
+
+        <h3>Detalles del pedido</h3>
+        {% include "order_snippet.html" %}
+
+    </div>
+</main>
+
+{% endblock content %}

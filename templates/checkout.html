@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<main>
+    <div class="container wow fadeIn">
+        <h2 class="my-5 h2 text-center">Realizar pago</h2>
+        <div class="row">
+            <div class="col-md-8 mb-4">
+                <div class="card black">
+                    <form method="POST" class="card-body">
+                        {% csrf_token %}
+
+                        <h3>Datos personales</h3>
+                        <div class='hideable-data-form'>
+                            <div class="md-form mb-5">
+                                <input type="text" class="form-control" name="email" id="mce-EMAIL" placeholder=""
+                                    required />
+                                <label for="email" class="email">Correo electrónico</label>
+                            </div>
+
+                            <div class="md-form mb-5">
+                                <input type="text" id="DNI" name="DNI" class="form-control" placeholder="" required>
+                                <label for="DNI" class="DNI">DNI</label>
+                            </div>
+                            <div class="md-form mb-5">
+                                <input type="text" id="telefono" name="telefono" class="form-control" placeholder=""
+                                    required />
+                                <label for="telefono" class="telefono">Número de teléfono</label>
+                            </div>
+                        </div>
+
+                        <h3>Dirección de envío</h3>
+
+                        <div class="d-block my-3">
+                            {% for value, name in form.fields.shipping_option.choices %}
+                            <div class="custom-control custom-radio">
+                                <input id="{{ name }}" name="shipping_option" value="{{ value }}" type="radio"
+                                    class="custom-control-input">
+                                <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="hideable-shipping-form">
+                            <div class="md-form mb-5">
+                                <input type="text" placeholder="" id="shipping_address" name="shipping_address"
+                                    class="form-control" />
+                                <label for="shipping_address" class="">Dirección</label>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-4 col-md-12 mb-4">
+                                    <label for="country">País</label>
+                                    {{ form.shipping_country }}
+                                    <div class="invalid-feedback">
+                                        Por favor seleccione un país válido.
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <label for="shipping_zip">Código Postal</label>
+                                    <input type='text' placeholder='Código postal' id='shipping_zip' name='shipping_zip'
+                                        class='form-control' />
+                                    <div class="invalid-feedback">
+                                        Código postal requerido.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3>Opciones de pago</h3>
+
+                        <div class="d-block my-3">
+                            {% for value, name in form.fields.payment_option.choices %}
+                            <div class="custom-control custom-radio">
+                                <input id="{{ name }}" name="payment_option" value="{{ value }}" type="radio"
+                                    class="custom-control-input">
+                                <label class="custom-control-label" for="{{ name }}">{{ name }}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <hr class="mb-4">
+                        <button class="btn btn-primary btn-lg btn-block" type="submit">Continuar con el
+                            pago</button>
+
+
+                    </form>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mb-4">
+                {% include "order_snippet.html" %}
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+    var hideable_shipping_form = $('.hideable-shipping-form');
+    $('input[name="shipping_option"]').change(function () {
+        var selected_shipping_option = $(this).val();
+        if (selected_shipping_option === 'D') {
+            hideable_shipping_form.show();
+        } else {
+            hideable_shipping_form.hide();
+        }
+    })
+</script>
+{% endblock extra_scripts %}

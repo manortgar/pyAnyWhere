@@ -1,0 +1,91 @@
+{% load cart_template_tags %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+<nav class="navbar fixed-top navbar-expand-lg navbar-light yellow scrolling-navbar" style="height: 60px;"">
+    <div class=" container">
+
+  <a class="navbar-brand waves-effect" style="margin: 0;" href="/">
+    <p style="font-family: 'Alfa Slab One', serif; font-size: 40px; margin: 0;">JESSE RENTALS</p>
+  </a>
+
+
+  <!-- Collapse -->
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <!-- Links -->
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+    <!-- Left -->
+    <ul class="navbar-nav mr-auto">
+      {% comment %} <li class="nav-item active">
+        <a class="nav-link waves-effect" href="/">Home
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/checkout">
+          Checkout</a>
+      </li> {% endcomment %}
+    </ul>
+
+    <!-- Right -->
+    <ul class="navbar-nav nav-flex-icons">
+      {% if request.user.is_authenticated %}
+      <li class="nav-item">
+        <a href="{% url 'core:order-summary' %}" class="nav-link waves-effect">
+          <span class="badge red z-depth-1 mr-1"> {{ request.user|cart_item_count }} </span>
+          <i class="fas fa-shopping-cart"></i>
+          <span class="clearfix d-none d-sm-inline-block"> Carrito </span>
+        </a>
+      </li>
+      {% if request.user.is_staff %}
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/profile">
+          <span class="clearfix d-none d-sm-inline-block"> Admin </span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/user-list">
+          <span class="clearfix d-none d-sm-inline-block"> Usuarios </span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/order-list">
+          <span class="clearfix d-none d-sm-inline-block"> Pedidos </span>
+        </a>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/profile">
+          <span class="clearfix d-none d-sm-inline-block"> Perfil </span>
+        </a>
+      </li>
+      {% endif %}
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="{% url 'account_logout' %}">
+          <span class="clearfix d-none d-sm-inline-block"> Cerrar sesión </span>
+        </a>
+      </li>
+
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="{% url 'account_login' %}">
+          <span class="clearfix d-none d-sm-inline-block"> Inicial sesión </span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="{% url 'account_signup' %}">
+          <span class="clearfix d-none d-sm-inline-block"> Registrarse </span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+
+  </div>
+</nav>

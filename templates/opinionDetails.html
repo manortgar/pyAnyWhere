@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <main>
+        <div style="text-align: center;">
+            <p>
+            <h1>{{ opinion.title }}</h1>
+            </p>
+            <p>
+            <h5>Creado por: {{ opinion.user.username }}</h5>
+            </p>
+            <br>
+            <p> {{ opinion.description }} </p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-warning"><a href="/opinions/{{ opinion.id }}/addResponse">Añadir
+                    respuesta</a></button>
+            <table class="table table-responsive">
+                <thead>
+                    <p>
+                    <h1>Respuestas</h1>
+                    <tr>
+                        <th>Descripción</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for response in responses %}
+                    <tr>
+                        <td>{{ response.description }}</td>
+                        <td>{{ response.user.username }}</td>
+                        <td>john@example.com</td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+
+</html>
+{% endblock content %}

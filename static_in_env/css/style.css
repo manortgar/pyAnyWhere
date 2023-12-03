@@ -1,0 +1,50 @@
+/* Required height of parents of the Half Page Carousel for proper displaying carousel itself */
+html,
+body,
+.view {
+  height: 100%; }
+
+/* Half Page Carousel itself*/
+.carousel {
+  height: 50%; }
+  .carousel .carousel-inner {
+    height: 100%; }
+    .carousel .carousel-inner .carousel-item,
+    .carousel .carousel-inner .active {
+      height: 100%; }
+
+/* Adjustment for mobile devices*/
+@media (max-width: 776px) {
+  .carousel {
+    height: 100%; } }
+
+/* Footer color for sake of consistency with Navbar */
+.page-footer {
+  background-color: #929FBA; }
+
+
+/* Estilo para el card */
+.caterpillar-card {
+  border: 1px solid #ddd; /* Borde del card */
+  border-radius: 10px; /* Bordes redondeados */
+  overflow: hidden; /* Para ocultar cualquier desbordamiento de contenido */
+  transition: transform 0.3s; /* Efecto de transición en hover */
+}
+
+.caterpillar-card:hover {
+  transform: scale(1.05); /* Efecto de escala en hover */
+}
+
+/* Estilo para el botón */
+.caterpillar-btn {
+  background-color: #ffc107; /* Amarillo Caterpillar */
+  color: #000; /* Texto en negro */
+  border: 1px solid #ffc107; /* Borde del botón */
+}
+
+.caterpillar-btn:hover {
+  background-color: #ffca2b; /* Amarillo ligeramente más claro en hover */
+  color: #000; /* Texto en negro en hover */
+  border: 1px solid #ffca2b; /* Borde del botón en hover */
+}
+

@@ -1,0 +1,79 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Términos y Condiciones - JesseRentals</title>
+    <style>
+        
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #title {
+            text-align: center;
+            color: #ff9900;  /* Amarillo CAT */
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        #content {
+            text-align: justify;
+            line-height: 1.6;
+        }
+
+        #prohibited-uses {
+            margin-top: 15px;
+        }
+
+        .prohibited-use {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .prohibited-use li::before {
+            content: "\2022";
+            color: #ff9900;  /* Amarillo CAT */
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1 id="title">Términos y Condiciones - JesseRentals</h1>
+    <div id="content">
+        <p>Gracias por elegir JesseRentals, su socio confiable en alquiler y venta de maquinaria de construcción. Por favor, lea atentamente los siguientes términos y condiciones antes de utilizar nuestro sitio web:</p>
+
+        <p><strong>Uso Personal:</strong> La información proporcionada en este sitio web está destinada únicamente para uso personal. No está permitido utilizarla con fines comerciales sin autorización previa de JesseRentals.</p>
+
+        <div id="prohibited-uses">
+            <p><strong>Usos Prohibidos:</strong> No se permite el uso de este sitio web de manera contraria a la ley. Esto incluye, pero no se limita a:</p>
+            <ul class="prohibited-use">
+                <li>Causar engaño a los demás.</li>
+                <li>Atentar contra la moralidad pública.</li>
+                <li>Violar derechos de propiedad intelectual o derechos similares.</li>
+                <li>Cargar contenido que contenga virus u otros programas dañinos.</li>
+                <li>Transmitir, almacenar o cargar hipervínculos o contenidos sobre los que el usuario no tenga derecho, especialmente cuando dichos enlaces o contenidos sean ilegales y violen la ley de protección de datos personales.</li>
+                <li>Distribuir publicidad o correos electrónicos no solicitados (spam).</li>
+            </ul>
+        </div>
+
+        <p>Gracias por su cooperación. Si tiene alguna pregunta o necesita más información, no dude en ponerse en contacto con nosotros.</p>
+    </div>
+</div>
+
+</body>
+</html>
+
+
+{% endblock content %}

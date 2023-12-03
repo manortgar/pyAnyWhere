@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Perfil de Usuario{% endblock title %}
+{% block content %}
+<div class="row my-3 p-3">
+   <!-- Contenido adicional si es necesario -->
+</div>
+
+{% if user_form.errors %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <div id="form_errors">
+            {% for key, value in user_form.errors.items %}
+                <strong>{{ value }}</strong>
+            {% endfor %}
+        </div>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+{% endif %}
+
+<div class="form-content" style="padding-left:15em;">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-row">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label class="small mb-1">Usuario:</label>
+                    {{ user_form.username|default:"" }}
+                    <label class="small mb-1">Correo electrónico:</label>
+                    {{ user_form.email|default:"" }}
+                    <label class="small mb-1">Número de teléfono:</label>
+                    {{ user_form.telefono|default:"" }}
+                    <label class="small mb-1">DNI:</label>
+                    {{ user_form.DNI|default:"" }}
+                    <label class="small mb-1">Calle:</label>
+                    {{ user_form.street_address|default:"" }}
+                    <label class="small mb-1">Piso:</label>
+                    {{ user_form.apartment_address|default:"" }}
+                    <label class="small mb-1">País:</label>
+                    {{ user_form.country|default:"" }}
+                    <label class="small mb-1">Código Postal:</label>
+                    {{ user_form.zip|default:"" }}
+                </div>
+            </div>
+        </div>
+        <label for="card_number">Número de tarjeta</label>
+        <input type="text" id="card_number" name="card_number" pattern="[0-9]*" minlength="16" maxlength="16" required>
+        
+        
+        <label for="card_expiry">Fecha de vencimiento</label>
+          <!-- Lista desplegable para el mes -->
+        {{user_form.card_expiry_month }}
+  
+        <!-- Lista desplegable para el año -->
+        {{ user_form.card_expiry_year }}
+                
+        <label for="card_cvc">CVC</label>
+        <input type="text" id="card_cvc" name="card_cvc" pattern="[0-9]*" minlength="3" maxlength="4" required>        
+        <br><br>
+        <button type="submit" class="btn btn-dark btn-lg">Guardar cambios</button>
+        <button type="reset" class="btn btn-dark btn-lg">Resetear</button>
+    </form>
+
+    <a class="nav-link waves-effect" href="/deleteuser">
+        <span class="clearfix d-none d-sm-inline-block">Eliminar Cuenta</span>
+    </a>
+</div>
+{% endblock content %}

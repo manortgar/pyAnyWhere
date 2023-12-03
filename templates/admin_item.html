@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+
+<style>
+    /* Personalizar estilos del formulario */
+    .form-group label {
+        color: white;  /* Color blanco para las etiquetas */
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        color: black;  /* Ajusta el color del texto de entrada según tus preferencias */
+    }
+</style>
+
+<main class="mt-5 pt-4">
+  <div class="container dark-grey-text mt-5">
+    <div class="row">
+      <div class="col-md-6">
+        <h1 class="font-weight-bold text-warning" style="text-shadow: 2px 2px 2px black;">{{ item.title|title }}</h1>
+      </div>
+    </div>
+    <!--Grid row-->
+    <div class="row wow fadeIn">
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+        <img src="{{ item.image.url }}" class="img-fluid" alt="">
+      </div>
+      <!--Grid column-->
+      <!--Grid column-->
+      <div class="col-md-6 mb-4">
+        <!--Content-->
+        <form method="post" enctype="multipart/form-data" class="mt-4">
+          {% csrf_token %}
+          <div class="form-group">
+            {{ form.as_p }}
+          </div>
+          <button type="submit">Guardar cambios</button>
+        </form>
+        
+        <!--Content-->
+      </div>
+      <!--Grid column-->
+    </div>
+    <!--Grid row-->
+    <hr>
+  </div>
+</main>
+
+{% endblock content %}

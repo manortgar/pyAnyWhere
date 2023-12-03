@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<main class="mt-5 pt-4">
+  <div class="container dark-grey-text mt-5">
+    <h1 class="font-weight-bold text-warning" style="text-shadow: 2px 2px 2px black;">Lista de Usuarios</h1>
+    <ul class="list-group mt-4">
+      {% for userProfile in users %}
+      <li class="list-group-item">
+        <span>{{ userProfile.user }}</span>
+        <ul class="list-group">
+          <li class="list-group-item list-group-item-dark">DNI: {{ userProfile.DNI }}</li>
+          <li class="list-group-item list-group-item-dark">Teléfono: {{ userProfile.telefono }}</li>
+        </ul>
+        <!-- Agrega enlaces de edición según tus necesidades -->
+        <!-- <a href="{{ userProfile.get_admin_user_panel }}" class="edit-btn btn btn-info btn-md my-0 p text-light">
+          Editar
+          <i class="fas fa-edit ml-1"></i>
+        </a> -->
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</main>
+{% endblock %}
