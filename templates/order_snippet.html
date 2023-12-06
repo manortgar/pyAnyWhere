@@ -8,7 +8,7 @@
 
 <div class="col-md-12 mb-4">
     <h4 class="d-flex justify-content-between align-items-center mb-3">
-        <span class="text-muted">Carrito</span>
+        <span class="text-muted">Tu cesta</span>
         <span class="badge badge-warning badge-pill text-black">{{ order.items.count }}</span>
     </h4>
     <ul class="list-group mb-3 z-depth-1 black-background">
@@ -16,9 +16,22 @@
         {% for order_item in order.items.all %}
         <li class="list-group-item d-flex justify-content-between lh-condensed black-background">
             <div>
-                <h6 class="my-0">{{ order_item.quantity }} x {{ order_item.item.title}}</h6>
+                {% if order_item.is_rental %}
+                {% if order_item.item.rental_duration_months == 1 %}
+                <h6 class="my-0">{{ order_item.quantity }} x {{ order_item.item.title}}
+                    ({{ order_item.item.rental_duration_months }} mes)
+                </h6>
+                {% else %}
+                <h6 class="my-0">{{ order_item.quantity }} x {{ order_item.item.title}}
+                    ({{ order_item.item.rental_duration_months }} meses)
+                </h6>
+                {% endif %}
+                {% else %}
+                <h6 class="my-0">{{ order_item.quantity }} x {{ order_item.item.title}}
+                </h6>
+                {% endif %}
             </div>
-            <span class="text-muted">${{ order_item.get_final_price }}</span>
+            <span class="text-muted">{{ order_item.get_final_price }}&euro;</span>
         </li>
         {% endfor %}
         {% if order.coupon %}
@@ -31,23 +44,23 @@
         </li>
         {% endif %}
 
-        {% if order.get_total < 50 %} <li class="list-group-item d-flex justify-content-between black-background">
-            <span>Gastos de envío (USD)</span>
-            <span class="text-muted">$3.99</span>
+        {% if order.get_total < 200 %} <li class="list-group-item d-flex justify-content-between black-background">
+            <span>Gastos de envío (EUR)</span>
+            <span class="text-muted">14.99&euro;</span>
             </li>
 
             <li class="list-group-item d-flex justify-content-between black-background">
-                <span>Total (USD)</span>
-                <strong>${{ order.get_final_price }}</strong>
+                <span>Total (EUR)</span>
+                <strong>{{ order.get_final_price }}&euro;</strong>
             </li>
 
             <li class="list-group-item d-flex justify-content-between black-background">
-                Existe envío gratuito a partir de $50
+                Existe envío gratuito a partir de 200&euro;
             </li>
             {% else %}
             <li class="list-group-item d-flex justify-content-between black-background">
-                <span>Total (USD)</span>
-                <strong>${{ order.get_total}}</strong>
+                <span>Total (EUR)</span>
+                <strong>{{ order.get_final_price }}&euro;</strong>
             </li>
             {% endif %}
     </ul>

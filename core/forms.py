@@ -98,7 +98,7 @@ class UpdateUserForm(forms.ModelForm):
 
     street_address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
     apartment_address = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    country = CountryField(blank_label='(select country)').formfield(
+    country = CountryField(blank_label='Selecciona un país').formfield(
         required=False, widget=CountrySelectWidget(attrs={'class': 'custom-select d-block w-100'}))
     zip = forms.CharField(max_length=100, required=False, widget=forms.TextInput(attrs={'class': 'form-control'}))
 

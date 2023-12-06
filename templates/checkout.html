@@ -3,6 +3,12 @@
 
 {% block content %}
 
+<style>
+    .form-control {
+        color: white
+    }
+</style>
+
 <main>
     <div class="container wow fadeIn">
         <h2 class="my-5 h2 text-center">Realizar pago</h2>
@@ -15,17 +21,17 @@
                         <h3>Datos personales</h3>
                         <div class='hideable-data-form'>
                             <div class="md-form mb-5">
-                                <input type="text" class="form-control" name="email" id="mce-EMAIL" placeholder=""
+                                <input type="text" class="form-control" name="email" id="email" placeholder=" "
                                     required />
                                 <label for="email" class="email">Correo electrónico</label>
                             </div>
 
                             <div class="md-form mb-5">
-                                <input type="text" id="DNI" name="DNI" class="form-control" placeholder="" required>
+                                <input type="text" id="DNI" name="DNI" class="form-control" placeholder=" " required />
                                 <label for="DNI" class="DNI">DNI</label>
                             </div>
                             <div class="md-form mb-5">
-                                <input type="text" id="telefono" name="telefono" class="form-control" placeholder=""
+                                <input type="text" id="telefono" name="telefono" class="form-control" placeholder=" "
                                     required />
                                 <label for="telefono" class="telefono">Número de teléfono</label>
                             </div>
@@ -45,23 +51,23 @@
 
                         <div class="hideable-shipping-form">
                             <div class="md-form mb-5">
-                                <input type="text" placeholder="" id="shipping_address" name="shipping_address"
+                                <input type="text" placeholder=" " id="shipping_address" name="shipping_address"
                                     class="form-control" />
                                 <label for="shipping_address" class="">Dirección</label>
                             </div>
 
                             <div class="row">
                                 <div class="col-lg-4 col-md-12 mb-4">
-                                    <label for="country">País</label>
+                                    <label for="country" class="">País</label>
                                     {{ form.shipping_country }}
                                     <div class="invalid-feedback">
                                         Por favor seleccione un país válido.
                                     </div>
                                 </div>
                                 <div class="col-lg-4 col-md-6 mb-4">
-                                    <label for="shipping_zip">Código Postal</label>
-                                    <input type='text' placeholder='Código postal' id='shipping_zip' name='shipping_zip'
-                                        class='form-control' />
+                                    <label for="shipping_zip" class="">Código Postal</label>
+                                    <input type="text" placeholder="" id="shipping_zip" name="shipping_zip"
+                                        class="form-control black" />
                                     <div class="invalid-feedback">
                                         Código postal requerido.
                                     </div>
@@ -114,5 +120,36 @@
             hideable_shipping_form.hide();
         }
     })
+</script>
+<script>
+    var user_profile_email = "{{ user_profile.user.email }}";
+    var user_profile_DNI = "{{ user_profile.DNI }}";
+    var user_profile_telefono = "{{ user_profile.telefono }}";
+    var user_profile_shipping_address = "{{ user_profile.primary_address.street_address }}" + ", " +
+        "{{ user_profile.primary_address.apartment_address }}"
+    var user_profile_zip = "{{ user_profile.primary_address.zip }}"
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var email_input = document.getElementById("email");
+        var DNI_input = document.getElementById("DNI");
+        var telefono_input = document.getElementById("telefono");
+        var shipping_address_input = document.getElementById("shipping_address")
+        var shipping_zip_input = document.getElementById("shipping_zip")
+
+        email_input.value = user_profile_email;
+        if (user_profile_DNI == "None") {
+            DNI_input.value = ""
+            telefono_input.value = ""
+        } else {
+            DNI_input.value = user_profile_DNI;
+            telefono_input.value = user_profile_telefono;
+        }
+        if (user_profile_shipping_address == ", ") {
+            shipping_address_input.value = ""
+        } else {
+            shipping_address_input.value = user_profile_shipping_address;
+        }
+        shipping_zip_input.value = user_profile_zip;
+    });
 </script>
 {% endblock extra_scripts %}

@@ -22,6 +22,7 @@
                         <th scope="col">Titulo</th>
                         <th scope="col">Descripción</th>
                         <th scope="col">Autor</th>
+                        <th scope="col">Producto</th>
 
                     </tr>
                 </thead>
@@ -31,6 +32,7 @@
                         <td><a href="/opinions/{{ opinion.id }}">{{ opinion.title }}</a></td>
                         <td>{{ opinion.description }}</td>
                         <td>{{ opinion.user.username }}</td>
+                        <td>{{ opinion.item }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

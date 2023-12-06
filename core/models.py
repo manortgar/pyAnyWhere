@@ -53,13 +53,6 @@ STATE_CHOICES = (
     
 )
 
-
-
-
-
-
-
-
 class UserProfile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -85,7 +78,9 @@ class UserProfile(models.Model):
 
 class Item(models.Model):
     title = models.CharField(max_length=100)
-    price = models.FloatField()
+    order_price = models.FloatField(default=0)
+    rental_price = models.FloatField(default=0)
+    rental_duration_months = models.PositiveIntegerField(default=1)
     fabricante = models.CharField(choices=FABRICANTE_CHOICES, max_length=3)
     category = models.CharField(choices=CATEGORY_CHOICES, max_length=2)
     label = models.CharField(choices=LABEL_CHOICES, max_length=1)
@@ -103,8 +98,13 @@ class Item(models.Model):
             'slug': self.slug
         })
 
-    def get_add_to_cart_url(self):
-        return reverse("core:add-to-cart", kwargs={
+    def get_add_to_cart_url_purchase(self):
+        return reverse("core:add-to-cart-purchase", kwargs={
+            'slug': self.slug
+        })
+    
+    def get_add_to_cart_url_rental(self):
+        return reverse("core:add-to-cart-rental", kwargs={
             'slug': self.slug
         })
 
@@ -122,23 +122,45 @@ class Item(models.Model):
 class OrderItem(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    user_profile = models.ForeignKey(settings.USER_PROFILE_MODEL,
+                             on_delete=models.CASCADE, 
+                             blank=True, null=True)
     ordered = models.BooleanField(default=False)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    is_rental = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.quantity} of {self.item.title}"
+    
+    def get_default_user_profile(current_user):
+        return UserProfile.objects.filter(user=current_user).first()
 
     def get_total_item_price(self):
-        return self.quantity * self.item.price
+        if self.is_rental:
+            return self.quantity * self.item.rental_price * self.item.rental_duration_months
+        else:
+            return self.quantity * self.item.order_price
 
     def get_final_price(self):
         return self.get_total_item_price()
+    
+    def get_item_rental_duration(self):
+        if self.is_rental:
+            return self.item.rental_duration_months
+        else:
+            return 0  # If not a rental, return 0 duration
+
+    def get_order_item_rental_duration(self):
+        return self.get_item_rental_duration()
 
 
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    user_profile = models.ForeignKey(settings.USER_PROFILE_MODEL,
+                             on_delete=models.CASCADE, 
+                             blank=True, null=True)                         
     ref_code = models.CharField(max_length=20, blank=True, null=True)
     items = models.ManyToManyField(OrderItem)
     start_date = models.DateTimeField(auto_now_add=True)
@@ -167,6 +189,9 @@ class Order(models.Model):
 
     def __str__(self):
         return self.user.username
+    
+    def get_default_user_profile(current_user):
+        return UserProfile.objects.filter(user=current_user).first()
 
     def get_total(self):
         total = 0
@@ -175,15 +200,14 @@ class Order(models.Model):
       
         return total
 
-
     def is_shipping_cost(self):
-        return not(self.shipping) or self.get_total() > 50
+        return self.get_total() >= 200
     
     def get_final_price(self):
         if self.is_shipping_cost():
             return self.get_total()
         else:
-            return self.get_total() + 3.99    
+            return self.get_total() + 14.99  
 
 
 class Address(models.Model):
@@ -224,6 +248,7 @@ class Opinion(models.Model):
     description = models.CharField(max_length = 100)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE, blank=True, null=True)
     
     
     def get_absolute_url(self):

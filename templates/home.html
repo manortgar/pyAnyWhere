@@ -5,7 +5,6 @@
 <style>
   /* Estilo para la card Caterpillar */
   .caterpillar-card {
-    border: 1px solid #ddd;
     /* Borde de la card */
     border-radius: 10px;
     /* Bordes redondeados */
@@ -20,29 +19,19 @@
     /* Efecto de escala en hover */
   }
 
-  /* Estilo para la imagen en la card */
-  .caterpillar-card .card-img-top {
-    border-bottom: 1px solid #ddd;
-    /* Borde inferior de la imagen */
-  }
-
   /* Estilo para el botón de "Añadir al carrito" */
   .caterpillar-card .add-to-cart-btn {
+    border-radius: 10px;
     background-color: #ffc107;
     /* Amarillo Caterpillar */
     color: #000;
     /* Texto en negro */
-    border: 1px solid #ffc107;
-    /* Borde del botón */
   }
 
   .caterpillar-card .add-to-cart-btn:hover {
     background-color: #ffca2b;
     /* Amarillo ligeramente más claro en hover */
     color: #000;
-    /* Texto en negro en hover */
-    border: 1px solid #ffca2b;
-    /* Borde del botón en hover */
   }
 
   /* Estilo para el precio */
@@ -119,28 +108,21 @@
             </div>
 
             <div class="card-body text-center">
-              <a href="" class="dark-grey-text">
+              <a href="{{ item.get_absolute_url }}" class="white-text">
                 <h5>{{ item.get_category_display }}</h5>
-        
+
               </a>
               <h5>
                 <strong>
                   <a href="{{ item.get_absolute_url }}" class="white-text">{{ item.title }}
                     <span class="badge badge-pill {{ item.get_label_display }}-color">Nuevo</span>
-                    <span class="badge badge-pill badge-warning" style="color: #000 !important;">{{ item.get_fabricante_display }}</span>
+                    <span class="badge badge-pill badge-warning" style="color: #000 !important;">
+                      {{ item.get_fabricante_display }}
+                    </span>
                   </a>
                 </strong>
               </h5>
 
-              <h4 class="font-weight-bold white-text">
-                <strong>$
-
-                  {{ item.price }}
-
-                </strong>
-              </h4>
-
-              
               {% if user.is_authenticated and user.is_staff %}
               <a href="{{ item.get_admin_item_panel }}" class="edit-btn btn btn-info btn-md my-0 p text-light">
                 Editar
@@ -148,11 +130,33 @@
               </a>
               {% else %}
               {% if item.get_disponibility_display == "Disponible" %}
-              <a href="{{ item.get_add_to_cart_url }}" class="add-to-cart-btn btn btn-warning btn-md my-0 p text-dark">
-                Añadir al carrito
-                <i class="fas fa-shopping-cart ml-1"></i>
-              </a>
-              
+              <div class="row">
+                <div class="col mb-2">
+                  <a href="{{ item.get_add_to_cart_url_purchase }}"
+                    class="btn btn-warning caterpillar-card add-to-cart-btn btn-md text-dark">
+                    <div class="text-center">
+                      Comprar producto <i class="fas fa-shopping-cart ml-1"></i>
+                    </div>
+                    <h4 class="font-weight-bold">
+                      <strong>{{ item.order_price }}€</strong>
+                    </h4>
+                  </a>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col mb-2">
+                  <a href="{{ item.get_add_to_cart_url_rental }}"
+                    class="btn btn-warning caterpillar-card add-to-cart-btn btn-md text-dark">
+                    <div class="text-center">
+                      Alquiler mensual <i class="fas fa-shopping-cart ml-1"></i>
+                    </div>
+                    <h4 class="font-weight-bold">
+                      <strong>{{ item.rental_price }}€</strong>
+                    </h4>
+                  </a>
+                </div>
+              </div>
+
               {% else %}
               <a href="">
                 <span class="badge red mr-1">{{ item.get_disponibility_display }}</span>

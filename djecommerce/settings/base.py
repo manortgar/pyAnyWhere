@@ -5,7 +5,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = config('SECRET_KEY')
-ALLOWED_HOSTS = ['.vercel.app']
+
 
 INSTALLED_APPS = [
     'core',
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_EMAIL_REQUIRED = True
 AUTH_USER_MODEL = "core.User"
+USER_PROFILE_MODEL = "core.UserProfile"
 
 JAZZMIN_SETTINGS = {
     # title of the window (Will default to current_admin_site.site_title if absent or None)

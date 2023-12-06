@@ -13,6 +13,7 @@
                         <th scope="col" class="text-white">Producto</th>
                         <th scope="col" class="text-white">Precio</th>
                         <th scope="col" class="text-white">Cantidad</th>
+                        <th scope="col" class="text-white">Meses</th>
                         <th scope="col" class="text-white">Total Precio Productos</th>
                     </tr>
                 </thead>
@@ -21,20 +22,43 @@
                     <tr>
                         <th scope="row" class="text-white">{{ forloop.counter }}</th>
                         <td class="text-white">{{ order_item.item.title }}</td>
-                        <td class="text-white">{{ order_item.item.price }}</td>
+                        {% if not order_item.is_rental %}
+                        <td class="text-white">{{ order_item.item.order_price }}&euro;</td>
+                        {% else %}
+                        <td class="text-white">{{ order_item.item.rental_price }}&euro;</td>
+                        {% endif %}
+
                         <td class="text-white">
                             <a href="{% url 'core:remove-single-item-from-cart' order_item.item.slug %}"><i
-                                    class="fas fa-minus mr-2"></i></a>
+                                    class="fas fa-minus mr-2 text-white"></i></a>
                             {{ order_item.quantity }}
-                            <a href="{% url 'core:add-to-cart' order_item.item.slug %}"><i
-                                    class="fas fa-plus ml-2"></i></a>
+                            {% if not order_item.is_rental %}
+                            <a href="{% url 'core:add-to-cart-purchase' order_item.item.slug %}"><i
+                                    class="fas fa-plus ml-2 text-white"></i></a>
+                            {% else %}
+                            <a href="{% url 'core:add-to-cart-rental' order_item.item.slug %}"><i
+                                    class="fas fa-plus ml-2 text-white"></i></a>
+                            {% endif %}
                         </td>
+
+                        {% if order_item.is_rental %}
+                        <td class="text-white">
+                            <a href="{% url 'core:remove-month-from-cart' order_item.item.slug %}"><i
+                                    class="fas fa-minus mr-2 text-white"></i></a>
+                            {{ order_item.item.rental_duration_months }}
+                            <a href="{% url 'core:add-month-to-cart' order_item.item.slug %}"><i
+                                    class="fas fa-plus ml-2 text-white"></i></a>
+                        </td>
+                        {% else %}
+                        <td></td>
+                        {% endif %}
+
                         <td class="text-white">
                             {% if order_item.item.discount_price %}
                             ${{ order_item.get_total_discount_item_price }}
-                            <span class="badge badge-primary">Saving ${{ order_item.get_amount_saved }}</span>
+                            <span class="badge badge-primary">Saving {{ order_item.get_amount_saved }}&euro;</span>
                             {% else %}
-                            ${{ order_item.get_total_item_price }}
+                            {{ order_item.get_total_item_price }}&euro;
                             {% endif %}
                             <a style='color: red;' href="{% url 'core:remove-from-cart' order_item.item.slug %}">
                                 <i class="fas fa-trash float-right"></i>
@@ -43,35 +67,30 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan='5' class="text-white">Your cart is empty</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5">
-                            <a class='btn btn-primary float-right text-white' href='/'>Continuar comprando</a>
-                        </td>
+                        <td colspan='6' class="text-white">Tu cesta está vacía</td>
                     </tr>
                     {% endfor %}
                     {% if object.coupon %}
                     <tr>
-                        <td colspan="4" class="text-white"><b>Coupon</b></td>
-                        <td class="text-white"><b>-${{ object.coupon.amount }}</b></td>
+                        <td colspan="6" class="text-white"><b>Coupon</b></td>
+                        <td class="text-white"><b>-{{ object.coupon.amount }}&euro;</b></td>
                     </tr>
                     {% endif %}
                     {% if object.get_total %}
                     <tr>
-                        <td colspan="4" class="text-white"><b>Total Pedido</b></td>
-                        <td class="text-white"><b>${{ object.get_total }}</b></td>
+                        <td colspan="5" class="text-white"><b>Total Pedido</b></td>
+                        <td class="text-white"><b>{{ object.get_total }}&euro;</b></td>
                     </tr>
                     <tr>
-                        <td colspan="5">
-                            <a class='btn btn-warning float-right ml-2 text-white' href='/checkout/'>Proceder al pago</a>
+                        <td colspan="6">
+                            <a class='btn btn-warning float-right ml-2 text-white' href='/checkout/'>Proceder al
+                                pago</a>
                             <a class='btn btn-primary float-right text-white' href='/'>Continuar comprando</a>
                         </td>
                     </tr>
                     {% endif %}
                 </tbody>
             </table>
-
         </div>
 
     </div>

@@ -134,6 +134,7 @@ class CheckoutView(View):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             usuario = self.request.user
+            user_profile = OrderItem.get_default_user_profile(usuario)
         else:
             usuario = User.objects.get(username = 'anonymous')
         try:
@@ -141,7 +142,8 @@ class CheckoutView(View):
             form = CheckoutForm()
             context = {
                 'form': form,
-                'order': order
+                'order': order,
+                'user_profile': user_profile
             }
             return render(self.request, "checkout.html", context)
         except ObjectDoesNotExist:
@@ -160,6 +162,7 @@ class CheckoutView(View):
             DNI = self.request.POST.get('DNI')
             telefono = self.request.POST.get('telefono')
             email = self.request.POST.get('email')
+            order.email = email
 
             shipping_address = self.request.POST.get('shipping_address')
             shipping_country = self.request.POST.get('shipping_country')
@@ -190,8 +193,26 @@ class CheckoutView(View):
                 shipping_address.save()
                 order.shipping_address = shipping_address
                 order.save()
+            
+            if shipping_option == 'R':
+                pass
+            elif shipping_option == 'D':
+                pass
+            else:
+                messages.warning(
+                    self.request, "No se ha seleccionado una opción de envío.")
+                return redirect('core:checkout')
 
-            order.email = email
+            self.request.session['checkout_data'] = {
+            'DNI': DNI,
+            'telefono': telefono,
+            'email': email,
+            'shipping_address': shipping_address.street_address,
+            'shipping_country': shipping_country,
+            'shipping_zip': shipping_zip,
+            'shipping_option': shipping_option
+            }
+
             if payment_option == 'T':
                 order.payment_type = False
                 order.save()
@@ -202,7 +223,7 @@ class CheckoutView(View):
                 return redirect('core:payment', payment_option='cod')
             else:
                 messages.warning(
-                    self.request, "Opción de pago seleccionada incorrecta")
+                    self.request, "No se ha seleccionado una opción de pago.")
                 return redirect('core:checkout')
                 
         except ObjectDoesNotExist:
@@ -245,6 +266,16 @@ class PaymentView(View):
         order = Order.objects.get(user=usuario, ordered=False)
         form = PaymentForm(self.request.POST)
         userprofile = UserProfile.objects.get(user=usuario)
+
+        checkout_data = self.request.session.get('checkout_data', {})
+        email = checkout_data.get('email')
+        DNI = checkout_data.get('DNI')
+        telefono = checkout_data.get('telefono')
+        shipping_address = checkout_data.get('shipping_address')
+        shipping_country = checkout_data.get('shipping_country')
+        shipping_zip = checkout_data.get('shipping_zip')
+        shipping_option = checkout_data.get('shipping_option')
+
         if form.is_valid():
             if order.payment_type:
                 try:
@@ -265,11 +296,19 @@ class PaymentView(View):
                     order.ref_code = create_ref_code()
                     order.save()
 
-                    email = order.user.email
                     template = get_template('invoice.html')
 
                     # Se renderiza el template y se envias parametros
-                    content = template.render({'email': email,'order': order})
+                    content = template.render(
+                        {'order': order,
+                        'email': email, 
+                        'DNI': DNI,
+                        'telefono': telefono,
+                        'shipping_address': shipping_address,
+                        'shipping_country': shipping_country,
+                        'shipping_zip': shipping_zip,
+                        'shipping_option': shipping_option
+                        })
 
                     # Se crea el correo (titulo, mensaje, emisor, destinatario)
                     try:
@@ -357,7 +396,16 @@ class PaymentView(View):
                     template = get_template('invoice.html')
 
                     # Se renderiza el template y se envias parametros
-                    content = template.render({'email': email,'order': order})
+                    content = template.render(
+                        {'order': order,
+                        'email': email, 
+                        'DNI': DNI,
+                        'telefono': telefono,
+                        'shipping_address': shipping_address,
+                        'shipping_country': shipping_country,
+                        'shipping_zip': shipping_zip,
+                        'shipping_option': shipping_option
+                        })
 
                     # Se crea el correo (titulo, mensaje, emisor, destinatario)
                     try:
@@ -475,6 +523,15 @@ class ItemDetailView(DetailView):
     model = Item
     template_name = "product.html"
 
+    def get_object(self, queryset=None):
+        slug = self.kwargs.get('slug')
+        return get_object_or_404(Item, slug=slug)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        opinions = Opinion.objects.filter(item=context['item'])
+        context['opinions'] = opinions
+        return context
 
 
 def add_to_cart(request, slug):
@@ -489,6 +546,14 @@ def add_to_cart(request, slug):
             user=usuario,
             ordered=False
         )
+    
+    if "purchase" in request.get_full_path():
+        order_item.is_rental = False
+    elif "rental" in request.get_full_path():
+        order_item.is_rental = True
+    else:
+        raise ValueError("Invalid request path. Must contain 'purchase' or 'rental'.")
+
     order_qs = Order.objects.filter(user=usuario, ordered=False)
     if order_qs.exists():
         order = order_qs[0]
@@ -496,18 +561,18 @@ def add_to_cart(request, slug):
         if order.items.filter(item__slug=item.slug).exists():
                 order_item.quantity += 1
                 order_item.save()
-                messages.info(request, "El objeto ha sido actualizado.")
+                messages.info(request, "La cantidad del producto ha aumentado.")
                 return redirect("core:order-summary")
         else:
                 order.items.add(order_item)
-                messages.info(request, "El objeto ha sido añadido a tu carrito")
+                messages.info(request, "El objeto ha sido añadido a tu cesta")
                 return redirect("core:order-summary")
     else:
             ordered_date = timezone.now()
             order = Order.objects.create(
                 user=usuario, ordered_date=ordered_date)
             order.items.add(order_item)
-            messages.info(request, "El objeto ya estaba añadido en tu carrito")
+            messages.info(request, "El objeto ya estaba añadido en tu cesta")
             return redirect("core:order-summary")
 
 
@@ -531,7 +596,7 @@ def remove_from_cart(request, slug):
                 ordered=False
             )[0]
             order.items.remove(order_item)
-            messages.info(request, "El objeto ha sido borrado de tu carrito")
+            messages.info(request, "El objeto ha sido borrado de tu cesta")
             return redirect("core:order-summary")
         else:
             messages.info(request, "Este objeto no estaba en tu cesta")
@@ -565,10 +630,73 @@ def remove_single_item_from_cart(request, slug):
                 order_item.save()
             else:
                 order.items.remove(order_item)
-            messages.info(request, "La cantidad del producto ha sido modificada.")
+            messages.info(request, "La cantidad del producto ha disminuido.")
             return redirect("core:order-summary")
         else:
-            messages.info(request, "El producto no se encuentra en el carrito")
+            messages.info(request, "El producto no se encuentra en la cesta")
+            return redirect("core:product", slug=slug)
+    else:
+        messages.info(request, "No tienes activa la orden")
+        return redirect("core:product", slug=slug)
+
+def add_month_to_cart(request, slug):
+    if request.user.is_authenticated:
+            usuario = request.user
+    else:
+        usuario = User.objects.get(username = 'anonymous')
+  
+    item = get_object_or_404(Item, slug=slug)
+    order_item, created = OrderItem.objects.get_or_create(
+            item=item,
+            user=usuario,
+            ordered=False
+        )
+
+    order_qs = Order.objects.filter(user=usuario, ordered=False)
+    if order_qs.exists():
+        order = order_qs[0]
+            # check if the order item is in the order
+        if order.items.filter(item__slug=item.slug).exists():
+                item.rental_duration_months += 1
+                item.save()
+                messages.info(request, "La cantidad de meses ha aumentado.")
+                return redirect("core:order-summary")
+    else:
+            ordered_date = timezone.now()
+            order = Order.objects.create(
+                user=usuario, ordered_date=ordered_date)
+            order.items.add(order_item)
+            messages.info(request, "El objeto ya estaba añadido en tu cesta")
+            return redirect("core:order-summary")
+
+def remove_month_from_cart(request, slug):
+    if request.user.is_authenticated:
+            usuario = request.user
+    else:
+            usuario = User.objects.get(username = 'anonymous')
+    item = get_object_or_404(Item, slug=slug)
+    order_qs = Order.objects.filter(
+        user=usuario,
+        ordered=False
+    )
+    if order_qs.exists():
+        order = order_qs[0]
+        # check if the order item is in the order
+        if order.items.filter(item__slug=item.slug).exists():
+            order_item = OrderItem.objects.filter(
+                item=item,
+                user=usuario,
+                ordered=False
+            )[0]
+            if order_item.item.rental_duration_months > 1:
+                item.rental_duration_months -= 1
+                item.save()
+            else:
+                order.items.remove(order_item)
+            messages.info(request, "La cantidad de meses ha disminuido.")
+            return redirect("core:order-summary")
+        else:
+            messages.info(request, "El producto no se encuentra en la cesta")
             return redirect("core:product", slug=slug)
     else:
         messages.info(request, "No tienes activa la orden")
@@ -607,7 +735,7 @@ def opinions_details(request, opinion_id):
     return render(request,'opinionDetails.html', context)
 
 @login_required
-def create_opinion(request):
+def create_opinion(request, slug):
     if request.method == 'POST':
         opinion_form = OpinionCreateForm(request.POST)
         if opinion_form.is_valid():
@@ -615,10 +743,11 @@ def create_opinion(request):
                 title = opinion_form.cleaned_data.get('title')
                 description = opinion_form.cleaned_data.get('description')
                 user = request.user
-                opinion = Opinion(title = title, description = description, user = user)
+                item = get_object_or_404(Item, slug=slug)
+                opinion = Opinion(title = title, description = description, user = user, item = item)
                 opinion.save()
                 messages.success(request, 'La opinión fue añadida con éxito')
-                return redirect('/opinions/')
+                return redirect('core:product', slug=slug)
             except:
                 messages.error(request, 'La opinión no se ha podido añadir')
                 return redirect('/opinions/create')
